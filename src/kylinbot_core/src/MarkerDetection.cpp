@@ -34,7 +34,8 @@ double ry,rz,rx;
 double tx,ty,tz;
 
     
-int detection_mode=0;   //detect squares or only blue area. 0: square 1: blue area
+int detection_mode=0;   
+//detect squares or only blue area. 0: stop detection; 1: square; 2: blue area; 3, follow line
 
 class MyPoint
 {
@@ -261,31 +262,37 @@ double tx,ty,tz;
 
         Rect roi(cand_1[0],cand_1[2]);
 
-        Mat ROI_image(src,roi); //src(roi).copyTo(ROI_image);
-        int rect_1_true=Color_judge(ROI_image,(cand_1[2].x-cand_1[0].x)*(cand_1[2].y-cand_1[0].y));
-        cout<<"rect1 true: "<<rect_1_true<<endl;
-        if(rect_1_true)
-            squares.push_back(cand_1);
+        Mat ROI_image(src,roi);
+	if(ROI_image.rows!=0&&ROI_image.cols!=0)
+	{
+	  int rect_1_true=Color_judge(ROI_image,(cand_1[2].x-cand_1[0].x)*(cand_1[2].y-cand_1[0].y));
+	  if(rect_1_true)
+	    squares.push_back(cand_1);
+	}
         if(cand_2.size()>0)
         {
             //Mat ROI_image_2;
             Rect roi_2(cand_2[0],cand_2[2]);
-            Mat ROI_image_2(src,roi_2);;
-            //src(roi_2).copyTo(ROI_image_2);
-            int rect_2_true=Color_judge(ROI_image_2,(cand_2[2].x-cand_2[0].x)*(cand_2[2].y-cand_2[0].y));
-            cout<<"rect2 true: "<<rect_2_true<<endl;
-            if(rect_2_true)
-                squares.push_back(cand_2);
+            Mat ROI_image_2(src,roi_2);
+	    if(ROI_image_2.rows!=0&&ROI_image_2.cols!=0)
+	    {
+	      int rect_2_true=Color_judge(ROI_image_2,(cand_2[2].x-cand_2[0].x)*(cand_2[2].y-cand_2[0].y));
+	      cout<<"rect2 true: "<<rect_2_true<<endl;
+	      if(rect_2_true)
+		squares.push_back(cand_2);
+	    }
             if(cand_3.size()>0)
             {
 
                 Rect roi_3(cand_3[0],cand_3[2]);
                 Mat ROI_image_3(src,roi_3);
-                // src(roi_3).copyTo(ROI_image_3);
-                int rect_3_true=Color_judge(ROI_image_3,(cand_3[2].x-cand_3[0].x)*(cand_3[2].y-cand_3[0].y));
-                cout<<"rect3 true: "<<rect_3_true<<endl;
-                if(rect_3_true)
-                    squares.push_back(cand_3);
+		if(ROI_image_3.rows!=0&&ROI_image_3.cols!=0)
+		{
+		  int rect_3_true=Color_judge(ROI_image_3,(cand_3[2].x-cand_3[0].x)*(cand_3[2].y-cand_3[0].y));
+		  cout<<"rect3 true: "<<rect_3_true<<endl;
+		  if(rect_3_true)
+		    squares.push_back(cand_3);
+		}
                 if(out.size()>0)
                     cout<<"too much rect ! "<<endl;
             }

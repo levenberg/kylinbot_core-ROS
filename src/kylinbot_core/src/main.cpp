@@ -12,6 +12,11 @@
 #include "serial.h"
 #define MAF_BUF_LEN 20
 
+void SystemInit()
+{
+                  //Odometry init
+                  //set the original pos of 
+}
 bool go_near_cube()
 {
     //For Demo Use
