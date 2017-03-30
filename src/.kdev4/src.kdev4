@@ -8,8 +8,8 @@ ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/yang/workspace/kylinbot_core-ROS/build/
-Build Type=Debug
+Build Type=
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=
+Install Directory=file:///home/yang/workspace/kylinbot_core-ROS/install

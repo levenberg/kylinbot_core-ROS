@@ -236,6 +236,7 @@ void controlCmd_velFromImageProcessingCallback(const geometry_msgs::Twist& cmd_v
 //    v_r = ...
     if(0 == cmd_vel_source)  // Only valid when selected.
     {
+	txKylinMsg.fs |= 1u << 31;
         txKylinMsg.cp.x = cmd_vel.linear.x;
         txKylinMsg.cv.x = 1000;
         txKylinMsg.cp.y = cmd_vel.linear.z;
@@ -283,9 +284,11 @@ int main(int argc, char ** argv)
         printf("serial open error!\n");
         return -1;
     }
+    //此处应有闭环，拉取和接收的里程计闭环，并返回状态标志。在订阅执行前应该采用加上当前里程计的状态处理。既是相对又是绝对。
     while(ros::ok())
     {
         ros::spinOnce();
+	//拉取的频率是100Hz,意味着从串口中读取里程计的频率是100Hz。若串口频率高于100Hz,则存在数据拥堵。
         PullMsg(odom_pub);
 		PushMsg();
         r.sleep();
