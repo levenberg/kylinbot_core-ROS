@@ -13,7 +13,8 @@
 #define MAF_BUF_LEN 20
 
 #define BUF_LEN 256
-
+#define GRASP_TP 600
+#define GRASP_BW 0
 
 ros::Time current_time, last_time;
 int cmd_vel_source = 0;// 0: From image processing 1: From Navigation node
@@ -207,6 +208,9 @@ void PushMsg()
 void cmd_velSourceCallback(const std_msgs::Int32 & source )
 {
     cmd_vel_source = source.data;
+    if(0=cmd_vel_source)
+      txKylinMsg.gp.e = 0;   //grasp init
+    
 }
 
 void controlCmd_velFromeNavigationCallback(const geometry_msgs::Twist& cmd_vel)
@@ -219,6 +223,7 @@ void controlCmd_velFromeNavigationCallback(const geometry_msgs::Twist& cmd_vel)
         txKylinMsg.cv.y = cmd_vel.linear.z;
         txKylinMsg.cp.z = 1000;
         txKylinMsg.cv.z = cmd_vel.angular.y;
+	
     }
 
 
@@ -234,7 +239,7 @@ void controlCmd_velFromImageProcessingCallback(const geometry_msgs::Twist& cmd_v
     // Use the kinematics of your robot to map linear and angular velocities into motor commands
 //    v_l = ...
 //    v_r = ...
-    if(0 == cmd_vel_source)  // Only valid when selected.
+    if(2 == cmd_vel_source)  // Only valid when selected.
     {
 	txKylinMsg.fs |= 1u << 31;
         txKylinMsg.cp.x = cmd_vel.linear.x;

@@ -4,6 +4,7 @@
 #include <ros/ros.h>
 #include<tf/transform_broadcaster.h>
 #include "std_msgs/Int8.h"
+#include "std_msgs/Int32.h"
 #include "std_msgs/Bool.h"
 #include "std_msgs/String.h"
 #include<geometry_msgs/Twist.h>
@@ -19,7 +20,10 @@ bool excute_state=false;     //indicate the excute state of close loop
 void SystemInit()
 {
                   //Odometry init
-                  //set the original pos of ramp
+  //set the original pos of ramp
+  
+
+  
 }
 
 void state_callback(const std_msgs::Bool &state)
@@ -45,24 +49,26 @@ int main(int argc, char ** argv)
     ros::init(argc, argv, "kylinbot_main");
     ros::NodeHandle n;
 
-    
-
-    ros::Rate r(100);
-    SystemInit();     
-    std_msgs::Int8 detectionMode;
-    ros::Publisher pub_detectionMode = n.advertise<std_msgs::Int8>("kylinbot/detectioMode",100);
-    ros::Publisher pub = n.advertise<geometry_msgs::Twist>("kylinbot/cmd_vel",100);
-    ros::Subscriber sub_state = n.subscribe("kylinbot/state",100, state_callback);
-  //  current_time = ros::Time::now();
-//    last_time = ros::Time::now();
     geometry_msgs::Twist cmd_vel;
-    int cmd_vel_source = 1;
+    std_msgs::Int8 detectionMode;
+    std_msgs::Int32 cmd_vel_source; 
     int workState = 0;
     detectionMode.data=0;
     
+    ros::Rate r(100);
+      
+
+    ros::Publisher pub_detectionMode = n.advertise<std_msgs::Int8>("kylinbot/detectioMode",100);
+    ros::Publisher pub = n.advertise<geometry_msgs::Twist>("cmd_vel",100);    //Navigation
+    ros::Publisher pub_velsource =n.advertise<std_msgs::Int32>("kylinbot/cmd_vel_source",100);
+    ros::Subscriber sub_state = n.subscribe("kylinbot/state",100, state_callback);
+  //  current_time = ros::Time::now();
+//    last_time = ros::Time::now();
+    SystemInit();   
+    
     while(ros::ok())
     {
-      
+      pub_velsource.publish(cmd_vel_source);
       pub_detectionMode.publish(detectionMode);
 
 
@@ -70,6 +76,7 @@ int main(int argc, char ** argv)
         switch (workState)
         {
             case 0: //
+	      cmd_vel_source.data=0;     
 	      detectionMode.data=0;
 	      cmd_vel.linear.x=0;
 	      cmd_vel.linear.y=0;
@@ -88,6 +95,7 @@ int main(int argc, char ** argv)
                     workState = 1;
                 break;
             case 1:
+	      cmd_vel_source.data=2;
 	      detectionMode.data=1;
                 if(grab_cube())
                     workState = 2;
