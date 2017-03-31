@@ -714,9 +714,9 @@ int main(int argc, char** argv)
 			//TODO: publish cmd_vel topic messages
 			//
 			cmd_vel.linear.x = tx;
-			cmd_vel.linear.y = ty;
+			cmd_vel.linear.y = 0 ;
 			cmd_vel.linear.z = tz;
-			cmd_vel.angular.x = rx;
+			cmd_vel.angular.x = 314;
 			cmd_vel.angular.y = ry;
 			cmd_vel.angular.z = rz;
 		}
@@ -725,8 +725,8 @@ int main(int argc, char** argv)
 			int dif_x=0, dif_y=0;
 			Color_detect(src,dif_x, dif_y);
 			cmd_vel.linear.x = 10*dif_x;
-			cmd_vel.linear.y = 10*dif_y;
-			cmd_vel.linear.z = 100; 
+			cmd_vel.linear.y = 0;
+			cmd_vel.linear.z = 0; 
 		}
 
 

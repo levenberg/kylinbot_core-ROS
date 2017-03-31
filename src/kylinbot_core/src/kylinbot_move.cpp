@@ -205,26 +205,42 @@ void PushMsg()
 	FIFO_Pop(&tx_fifo, tx_buf[1], len);
 	write_serial(tx_buf[1], len, 50);
 }
-void cmd_velSourceCallback(const std_msgs::Int32 & source )
+void cmd_graspvelCallback(const std_msgs::Int32 & source )
 {
     cmd_vel_source = source.data;
-    if(0=cmd_vel_source)
-      txKylinMsg.gp.e = 0;   //grasp init
+   /* if(0==cmd_vel_source)     //grasp init
+    {
+      txKylinMsg.gp.e = 0;   
+      txKylinMsg.gp.c = 314;  
+    }
+    else if(1==cmd_vel_source)   //grasp collapse
+    {
+      txKylinMsg.gp.e =0;  
+      txKylinMsg.gp.c = 2199;
+    }
+    else if(2==cmd_vel_source)  //grasp up
+    {
+      txKylinMsg.gp.e = 200;
+      txKylinMsg.gp.c = 2199;
+    }
+    */
     
 }
 
 void controlCmd_velFromeNavigationCallback(const geometry_msgs::Twist& cmd_vel)
 {
-    if(1 == cmd_vel_source)// Only valid when selected.
-    {
+    //if(1 == cmd_vel_source)// Only valid when selected.
+    //{
         txKylinMsg.cp.x = 1000;
         txKylinMsg.cv.x = cmd_vel.linear.x;
         txKylinMsg.cp.y = 1000;
         txKylinMsg.cv.y = cmd_vel.linear.z;
         txKylinMsg.cp.z = 1000;
         txKylinMsg.cv.z = cmd_vel.angular.y;
+	txKylinMsg.gp.e = cmd_vel.linear.y;     
+	txKylinMsg.gp.c = cmd_vel.angular.x;
 	
-    }
+    //}
 
 
 }
@@ -239,9 +255,9 @@ void controlCmd_velFromImageProcessingCallback(const geometry_msgs::Twist& cmd_v
     // Use the kinematics of your robot to map linear and angular velocities into motor commands
 //    v_l = ...
 //    v_r = ...
-    if(2 == cmd_vel_source)  // Only valid when selected.
-    {
-	txKylinMsg.fs |= 1u << 31;
+    //if(2 == cmd_vel_source)  // Only valid when selected.
+    //{
+	//txKylinMsg.fs |= 1u << 31;
         txKylinMsg.cp.x = cmd_vel.linear.x;
         txKylinMsg.cv.x = 1000;
         txKylinMsg.cp.y = cmd_vel.linear.z;
@@ -250,7 +266,8 @@ void controlCmd_velFromImageProcessingCallback(const geometry_msgs::Twist& cmd_v
         txKylinMsg.cv.z = 1000;
         txKylinMsg.gp.e = cmd_vel.linear.y;
         txKylinMsg.gv.e = 1000; //cmd_vel.angular.y;
-    }
+	//miss square TODO
+    //}
 
 
     // Then set your wheel speeds (using wheel_left and wheel_right as examples)
@@ -267,7 +284,7 @@ int main(int argc, char ** argv)
     ros::Subscriber sub_1 = n.subscribe("kylinbot/cmd_vel", 1000, controlCmd_velFromImageProcessingCallback);
     //ros::Publisher pub = n.advertise<nav_msgs::Odometry_>("kylinbot/Odom",100); //remain buggy.
     ros::Subscriber sub_2 = n.subscribe("cmd_vel",100,controlCmd_velFromeNavigationCallback);
-    ros::Subscriber sub_3 = n.subscribe("kylinbot/cmd_vel_source",100,cmd_velSourceCallback);
+    ros::Subscriber sub_3 = n.subscribe("kylinbot/cmd_graspvel",100,cmd_graspvelCallback);
 
 
     //Publish Odom
