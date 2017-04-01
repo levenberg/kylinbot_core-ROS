@@ -21,9 +21,9 @@ void SystemInit()
 {
                   //Odometry init
   //set the original pos of ramp
-  
-
-  
+  int i=0;     //wait for other node initilization
+  while(i++<1000)
+    ;
 }
 
 void state_callback(const std_msgs::Bool &state)
@@ -148,7 +148,7 @@ int main(int argc, char ** argv)
 		workState=0;
 	      break;
             case 100:
-                fold_cubes();
+                
                 break;
             default:
                 break;

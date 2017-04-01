@@ -671,85 +671,63 @@ int main(int argc, char** argv)
             continue;
 
         int lostCount = 0;
+	int dif_x=0, dif_y=0;
         Mat src=frame.clone();
-		if(detection_mode==0)  //detect square
-		{
-			findSquares(src,frame, squares);
-			LocationMarkes(squares);
-			drawSquares(frame, squares); 
-			/*****************************/
-			/*******send the object position to ARM*********/
-			/***********************************************/
-			//imshow(wndname, frame);
-			int c = waitKey(1);
-			
-			t = ((double)getTickCount() - t)/getTickFrequency();
-			cout<<"time: "<<t<<" second"<<endl;
-			
-			if((char)c == 'q')
-				break;
-			
-			if(squares.size() > 0)
-			{
-				lostCount = 0;
-			}
-			
-			
-			if (squares.size() == 0)
-			{
-				lostCount++;
-				if(lostCount >= 3)
-				{
-					lostCount = 0;
-					tx = 0;
-					ty = 0;
-					tz = 0;
-					rx = 0;
-					ry = 0;
-					rz = 0;
-				}
-				
-			}
-			
-			//TODO: publish cmd_vel topic messages
-			//
-			cmd_vel.linear.x = tx;
-			cmd_vel.linear.y = 0 ;
-			cmd_vel.linear.z = tz;
-			cmd_vel.angular.x = 314;
-			cmd_vel.angular.y = ry;
-			cmd_vel.angular.z = rz;
-		}
-		else    //detect blue area
-		{
-			int dif_x=0, dif_y=0;
-			Color_detect(src,dif_x, dif_y);
-			cmd_vel.linear.x = 10*dif_x;
-			cmd_vel.linear.y = 0;
-			cmd_vel.linear.z = 0; 
-		}
+	switch(detection_mode)
+	{
+	  case 0:   //do nothing
+	    //TODO:
+	    break;
+	  case 1:   //detect squares
+	    findSquares(src,frame, squares);
+	    LocationMarkes(squares);
+	    drawSquares(frame, squares); 
+	    if(squares.size() > 0)
+	    {
+	      lostCount = 0;
+	    }
+	    if (squares.size() == 0)
+	    {
+	      lostCount++;
+	      if(lostCount >= 3)
+	      {
+		lostCount = 0;
+		tx = 0;
+		ty = 0;
+		tz = 0;
+		rx = 0;
+		ry = 0;
+		rz = 0;
+	      } 
+	    }
+	    // publish cmd_vel topic messages
+	    cmd_vel.linear.x = tx;
+	    cmd_vel.linear.y = 0 ;
+	    cmd_vel.linear.z = tz;
+	    cmd_vel.angular.x = 314;
+	    cmd_vel.angular.y = ry;
+	    cmd_vel.angular.z = rz;
+	    pub.publish(cmd_vel);
+	    break;
+	  case 2:   //detect green area
 
-
-        pub.publish(cmd_vel);
-//        txKylinMsg.cp.x = tx;
-//        txKylinMsg.cv.x = 1000;
-//        txKylinMsg.cp.y = tz;
-//        txKylinMsg.cv.y = 1000;
-//        txKylinMsg.cp.z = ry;
-//        txKylinMsg.cv.z = 1000;
-//        txKylinMsg.gp.e = ty;
-//        txKylinMsg.gv.e = 1000;
-
-        if (abs(tx) < 100 && abs(ty) < 100 && abs(tz) < 100) {
-            //txKylinMsg.gp.c = 2199;
-            //txKylinMsg.gv.c = 4000;
-        } else {
-            //txKylinMsg.gp.c = 314;
-            //txKylinMsg.gv.c = 4000;
-        }
+	    Color_detect(src,dif_x, dif_y);
+	    cmd_vel.linear.x = 10*dif_x;
+	    cmd_vel.linear.y = 0;
+	    cmd_vel.linear.z = 0; 
+	    pub.publish(cmd_vel);
+	    break;
+	  case 3:  //follow line
+	    //TODO:
+	    break;
+	  default:
+	    break;
+	}
+	int c = waitKey(1);
+	if((char)c == 'q')
+	      break;
         ros::spinOnce();
         r.sleep();
-
     }
     //capture.closeStream();
 
